@@ -32,14 +32,22 @@ export const loginController = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
     const isMatch = await user.isValidPassword(password);
-    const token = generateAuthToken(user);
 
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    const token = generateAuthToken(user);
+
+    res.cookie("token", token);
+
     return res.status(201).json({ user: user, token: token });
   } catch (error) {
     console.log("Error");
     return res.status(500).json({ error: error.message });
   }
+};
+
+export const profileController = async (req, res) => {
+  console.log(req.user);
+  return res.status(201).json({ user: req.user });
 };
