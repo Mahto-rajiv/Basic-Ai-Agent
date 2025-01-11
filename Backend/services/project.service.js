@@ -1,4 +1,4 @@
-import Project from "../models/project.model.js";
+import projectModel from "../models/project.model.js";
 
 export const createProject = async ({ name, userId }) => {
   if (!name) {
@@ -6,20 +6,33 @@ export const createProject = async ({ name, userId }) => {
   }
 
   if (!userId) {
-    throw new Error("User is required");
+    throw new Error("UserId is required");
   }
 
   let project;
   try {
-    project = await Project.create({
+    project = await projectModel.create({
       name,
-      userId,
+      users: [userId],
     });
   } catch (error) {
     if (error.code === 11000) {
-      throw new Error("Project name already exists.");
+      throw new Error("Project name already exists");
     }
     throw error;
   }
+
   return project;
+};
+
+export const getAllProjectByUserId = async ({ userId }) => {
+  if (!userId) {
+    throw new Error("UserId is required");
+  }
+
+  const allUserProjects = await projectModel.find({
+    users: userId,
+  });
+
+  return allUserProjects;
 };

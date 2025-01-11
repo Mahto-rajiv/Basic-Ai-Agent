@@ -9,10 +9,12 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+    users: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
