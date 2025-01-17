@@ -106,6 +106,5 @@ export const getProjectById = async ({ projectId }) => {
     })
     .populate("users");
 
-  console.log(project);
   return project;
 };
