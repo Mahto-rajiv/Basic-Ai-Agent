@@ -87,8 +87,9 @@ export const getAllUsersController = async (req, res) => {
     const allUsers = await userService.getAllUsers({
       userId: loggedInUser._id,
     });
-    res.status(200).json({ allUsers });
+    res.status(200).json({ users: allUsers });
   } catch (error) {
     console.log(error);
+    return res.status(400).json({ error: error.message });
   }
 };
