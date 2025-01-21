@@ -1,39 +1,56 @@
-```javascript
-function isPrime(num) {
-  // Handle edge cases: numbers less than 2 are not prime
-  if (num < 2) {
-    return { isPrime: false, factors: [] };
-  }
+{"text": "This is the file tree structure for an Express server using ES6.", "fileTree": {"app.js": {"content": "const
+express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+// Middleware to parse
+JSON bodies
+app.use(express.json());
+// Define routes
+app.get('/', (req, res) => {
+res.send('Hello from
+Express!');
+});
+app.post('/users', (req, res) => {
+try {
+const newUser = req.body;
+// Validate user data
+here
+console.log('New user:', newUser);
+res.status(201).json({ message: 'User created', user: newUser });
+} catch
+(error) {
+console.error('Error creating user:', error);
+res.status(500).json({ error: 'Failed to create user' });
 
-  // Check for divisibility from 2 up to the square root of num
-  for (let i = 2; i <= Math.sqrt(num); i++) {
-    if (num % i === 0) {
-      // Found a factor, so it's not prime.  Return factors.
-      let factors = [i];
-      if (i * i !== num) factors.push(num / i); //Avoid duplicates for perfect squares
-      return { isPrime: false, factors: factors };
-    }
-  }
-
-  // If no factors were found, it's prime
-  return { isPrime: true, factors: [] };
 }
+});
+// Error handling middleware
+app.use((err, req, res, next) => {
+console.error(err.stack);
 
-// Example usage:
-console.log(isPrime(2)); // Output: { isPrime: true, factors: [] }
-console.log(isPrime(15)); // Output: { isPrime: false, factors: [3, 5] }
-console.log(isPrime(17)); // Output: { isPrime: true, factors: [] }
-console.log(isPrime(36)); // Output: { isPrime: false, factors: [2, 18] }  //or [6,6] if you don't handle the perfect square case
-console.log(isPrime(1)); // Output: { isPrime: false, factors: [] }
-console.log(isPrime(0)); // Output: { isPrime: false, factors: [] }
-console.log(isPrime(-5)); // Output: { isPrime: false, factors: [] }
-```
+res.status(500).json({ error: 'Internal Server Error' });
+});
+// Start the server
+app.listen(port, () => {
 
-This improved version:
+console.log(`Server is running on port ${port}`);
+});
+"}, "package.json": {"content": "{
+\"name\":
+\"express-es6-server\",
+\"version\": \"1.0.0\",
+\"description\": \"Express server using ES6\",
+\"main\":
+\"app.js\",
+\"scripts\": {
+\"start\": \"node app.js\"
+},
+\"dependencies\": {
+\"express\": \"^4.18.2\"
+},
 
-1. **Handles Edge Cases:** Explicitly checks for numbers less than 2 (which are not prime).
-2. **Efficiency:** It only checks divisibility up to the square root of `num`. If a number has a divisor greater than its square root, it must also have a divisor smaller than its square root.
-3. **Clear Output:** Returns an object with `isPrime` (boolean) and `factors` (array) properties, making the results easier to use.
-4. **Perfect Square Handling:** The code now correctly handles perfect squares (like 36) by adding only unique factors to the `factors` array.
-
-This function is more robust and efficient than a simpler implementation. Remember that for extremely large numbers, even more sophisticated primality testing algorithms might be necessary for optimal performance.
+\"devDependencies\": {},
+\"type\": \"module\"
+}
+"}, "buildCommand": {"mainItem": "npm", "commands": ["install"]},
+"startCommand": {"mainItem": "node", "commands": ["app.js"]}}}
