@@ -47,6 +47,8 @@ const Project = () => {
   const [webContainer, setWebContainer] = useState(null);
   const [iframeUrl, setIframeUrl] = useState(null);
 
+  const [runProcess, setRunProcess] = useState(null);
+
   const handleUserClick = (id) => {
     setSelectedUserId((prevSelectedUserId) => {
       const newSelectedUserId = new Set(prevSelectedUserId);
@@ -287,15 +289,23 @@ const Project = () => {
                     })
                   );
 
-                  const runProcess = await webContainer.spawn("npm", ["start"]);
+                  if (runProcess) {
+                    runProcess.kill();
+                  }
 
-                  runProcess.output.pipeTo(
+                  let tempRunProcess = await webContainer.spawn("npm", [
+                    "start",
+                  ]);
+
+                  tempRunProcess.output.pipeTo(
                     new WritableStream({
                       write(chunk) {
                         console.log(chunk);
                       },
                     })
                   );
+
+                  setRunProcess(tempRunProcess);
 
                   webContainer.on("server-ready", (port, url) => {
                     console.log(port, url);
@@ -322,7 +332,10 @@ const Project = () => {
                         ...prevFileTree,
                         [currentFile]: {
                           ...prevFileTree[currentFile],
-                          content: updatedContent,
+                          file: {
+                            ...prevFileTree[currentFile].file,
+                            contents: updatedContent,
+                          },
                         },
                       }));
                     }}
@@ -345,7 +358,17 @@ const Project = () => {
         </div>
 
         {iframeUrl && webContainer && (
-          <iframe src={iframeUrl} className="w-1/2 h-full"></iframe>
+          <div className="flex min-w-96 flex-col h-full">
+            <div className="address-bar">
+              <input
+                type="text"
+                onChange={(e) => setIframeUrl(e.target.value)}
+                value={iframeUrl}
+                className="w-full p-2 px-4 bg-slate-200"
+              />
+            </div>
+            <iframe src={iframeUrl} className="w-full h-full"></iframe>
+          </div>
         )}
       </section>
 
