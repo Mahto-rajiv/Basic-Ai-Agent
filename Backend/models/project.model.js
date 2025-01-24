@@ -15,6 +15,10 @@ const projectSchema = new mongoose.Schema(
         ref: "user",
       },
     ],
+    fileTree: {
+      type: Object,
+      default: {},
+    },
   },
   { timestamps: true }
 );

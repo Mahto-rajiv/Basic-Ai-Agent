@@ -116,17 +116,20 @@ const Project = () => {
     receiveMessage("project-message", (data) => {
       console.log(data);
 
-      const message = JSON.parse(data.message);
+      if (data.sender._id == "ai") {
+        const message = JSON.parse(data.message);
 
-      console.log(message);
+        console.log(message);
 
-      webContainer?.mount(message.fileTree);
+        webContainer?.mount(message.fileTree);
 
-      if (message.fileTree) {
-        setFileTree(message.fileTree);
+        if (message.fileTree) {
+          setFileTree(message.fileTree || {});
+        }
+        setMessages((prevMessages) => [...prevMessages, data]); // Update messages state
+      } else {
+        setMessages((prevMessages) => [...prevMessages, data]); // Update messages state
       }
-
-      setMessages((prevMessages) => [...prevMessages, data]); // Update messages state
     });
 
     axios
@@ -135,6 +138,7 @@ const Project = () => {
         console.log(res.data.project);
 
         setProject(res.data.project);
+        setFileTree(res.data.project.fileTree || {});
       });
 
     axios
@@ -146,6 +150,20 @@ const Project = () => {
         console.log(err);
       });
   }, []);
+
+  function saveFileTree(ft) {
+    axios
+      .put("/projects/update-file-tree", {
+        projectId: project._id,
+        fileTree: ft,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   // Removed appendIncomingMessage and appendOutgoingMessage functions
 
@@ -328,16 +346,16 @@ const Project = () => {
                     suppressContentEditableWarning
                     onBlur={(e) => {
                       const updatedContent = e.target.innerText;
-                      setFileTree((prevFileTree) => ({
-                        ...prevFileTree,
+                      const ft = {
+                        ...fileTree,
                         [currentFile]: {
-                          ...prevFileTree[currentFile],
                           file: {
-                            ...prevFileTree[currentFile].file,
                             contents: updatedContent,
                           },
                         },
-                      }));
+                      };
+                      setFileTree(ft);
+                      saveFileTree(ft);
                     }}
                     dangerouslySetInnerHTML={{
                       __html: hljs.highlight(
